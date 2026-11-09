@@ -1,0 +1,1953 @@
+<!doctype html>
+<html lang="en" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LUMINARI – Digital Mental Health Care</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="/_sdk/data_sdk.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&amp;family=DM+Sans:wght@300;400;500;600;700&amp;family=Space+Mono:wght@400;700&amp;display=swap" rel="stylesheet">
+  <style>
+body { box-sizing: border-box; font-family: 'DM Sans', sans-serif; }
+* { box-sizing: border-box; }
+
+:root {
+  --bg: #E8F4F0;
+  --surface: #FFFFFF;
+  --text: #1A3A3A;
+  --primary: #2BA89E;
+  --secondary: #7EC8C0;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(40px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(43,168,158,0.3); }
+  50% { box-shadow: 0 0 40px rgba(43,168,158,0.6); }
+}
+@keyframes breathe {
+  0%, 100% { transform: scale(1); opacity: 0.6; }
+  50% { transform: scale(1.15); opacity: 1; }
+}
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+@keyframes bounce-in {
+  0% { opacity: 0; transform: scale(0.8); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+.anim-fade { animation: fadeInUp 0.8s ease-out forwards; }
+.anim-fade-d1 { animation: fadeInUp 0.8s ease-out 0.2s forwards; opacity: 0; }
+.anim-fade-d2 { animation: fadeInUp 0.8s ease-out 0.4s forwards; opacity: 0; }
+.anim-fade-d3 { animation: fadeInUp 0.8s ease-out 0.6s forwards; opacity: 0; }
+.anim-slide { animation: slideInRight 0.5s ease-out forwards; }
+.anim-bounce { animation: bounce-in 0.3s ease-out; }
+
+.hero-title {
+  font-family: 'Playfair Display', serif;
+  font-weight: 900;
+  background: linear-gradient(135deg, var(--primary), #1A8A7E, var(--secondary));
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 4s linear infinite;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary), #1A8A7E);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(43,168,158,0.4); }
+.btn-primary:active { transform: translateY(0); }
+
+.card-hover {
+  transition: all 0.3s ease;
+}
+.card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(43,168,158,0.15);
+}
+
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(43,168,158,0.15), transparent);
+  animation: breathe 6s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.nav-item {
+  transition: all 0.2s ease;
+  border-left: 3px solid transparent;
+}
+.nav-item:hover, .nav-item.active {
+  background: rgba(43,168,158,0.1);
+  border-left-color: var(--primary);
+}
+
+.toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+  padding: 12px 24px;
+  border-radius: 12px;
+  color: white;
+  font-weight: 500;
+  animation: slideInRight 0.3s ease-out;
+}
+.toast-success { background: linear-gradient(135deg, #2BA89E, #1A8A7E); }
+.toast-error { background: linear-gradient(135deg, #E74C3C, #C0392B); }
+.toast-info { background: linear-gradient(135deg, #3498DB, #2980B9); }
+
+.chat-bubble {
+  max-width: 80%;
+  padding: 10px 16px;
+  border-radius: 18px;
+  margin-bottom: 8px;
+  line-height: 1.5;
+  font-size: 14px;
+  word-wrap: break-word;
+}
+.chat-user { background: var(--primary); color: white; margin-left: auto; border-bottom-right-radius: 4px; }
+.chat-bot { background: var(--surface); color: var(--text); border: 1px solid #e0ede9; border-bottom-left-radius: 4px; }
+
+.game-cell {
+  width: 70px; height: 70px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px; cursor: pointer;
+  border-radius: 12px;
+  background: var(--surface);
+  border: 2px solid #e0ede9;
+  transition: all 0.2s;
+  user-select: none;
+}
+.game-cell:hover { border-color: var(--primary); background: #f0faf8; }
+.game-cell.revealed { cursor: default; }
+
+input:focus, textarea:focus, select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(43,168,158,0.15); }
+
+.scrollbar-thin::-webkit-scrollbar { width: 6px; }
+.scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+.scrollbar-thin::-webkit-scrollbar-thumb { background: var(--secondary); border-radius: 3px; }
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: var(--surface);
+  border-radius: 20px;
+  padding: 24px;
+  max-width: 500px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+
+.new-message-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: #E74C3C;
+  color: white;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+@media (max-width: 768px) {
+  .hero-title { font-size: 3rem !important; }
+  .sidebar { display: none; }
+  .sidebar.mobile-open { display: flex; position: fixed; z-index: 50; left: 0; top: 0; bottom: 0; width: 260px; }
+}
+</style>
+  <style>@view-transition { navigation: auto; }</style>
+ </head>
+ <body class="h-full" style="background: var(--bg); color: var(--text);">
+  <div id="app" class="h-full w-full overflow-auto"><!-- TOAST CONTAINER -->
+   <div id="toast-container"></div><!-- RESOURCE MODAL -->
+   <div id="resource-modal" class="modal-overlay hidden" style="display:none;">
+    <div class="modal">
+     <div class="flex items-center justify-between mb-6">
+      <h2 class="text-xl font-bold" style="font-family:'Playfair Display',serif;">Add Resource</h2><button onclick="closeResourceModal()" class="text-2xl" style="color:var(--secondary);">×</button>
+     </div>
+     <form onsubmit="addResource(event)" class="space-y-4">
+      <div><label for="res-type" class="block text-xs font-semibold mb-1 uppercase tracking-wider" style="color:var(--secondary);">Resource Type</label> <select id="res-type" required class="w-full px-4 py-3 rounded-xl border text-sm" style="border-color:#e0ede9;background:var(--bg);"> <option value="">Choose type...</option> <option value="book">📖 Book</option> <option value="video">🎬 Video</option> <option value="audio">🎵 Audio</option> </select>
+      </div>
+      <div><label for="res-title" class="block text-xs font-semibold mb-1 uppercase tracking-wider" style="color:var(--secondary);">Title</label> <input id="res-title" type="text" required class="w-full px-4 py-3 rounded-xl border text-sm" style="border-color:#e0ede9;background:var(--bg);" placeholder="Resource title">
+      </div>
+      <div><label for="res-desc" class="block text-xs font-semibold mb-1 uppercase tracking-wider" style="color:var(--secondary);">Description</label> <textarea id="res-desc" required rows="3" class="w-full px-4 py-3 rounded-xl border text-sm" style="border-color:#e0ede9;background:var(--bg);" placeholder="Brief description"></textarea>
+      </div>
+      <div><label for="res-link" class="block text-xs font-semibold mb-1 uppercase tracking-wider" style="color:var(--secondary);">URL (for videos/audios)</label> <input id="res-link" type="url" class="w-full px-4 py-3 rounded-xl border text-sm" style="border-color:#e0ede9;background:var(--bg);" placeholder="https://example.com">
+      </div><button type="submit" class="btn-primary w-full py-3 rounded-xl text-white font-bold text-sm">Add Resource</button>
+     </form>
+    </div>
+   </div><!-- ADMIN MESSAGE MODAL -->
+   <div id="admin-message-modal" class="modal-overlay hidden" style="display:none;">
+    <div class="modal">
+     <div class="flex items-center justify-between mb-6">
+      <h2 class="text-xl font-bold" style="font-family:'Playfair Display',serif;">Send Message</h2><button onclick="closeAdminMessageModal()" class="text-2xl" style="color:var(--secondary);">×</button>
+     </div>
+     <form onsubmit="sendAdminMessage(event)" class="space-y-4">
+      <div><label for="msg-recipient" class="block text-xs font-semibold mb-1 uppercase tracking-wider" style="color:var(--secondary);">To:</label> <input id="msg-recipient" type="text" readonly class="w-full px-4 py-3 rounded-xl border text-sm" style="border-color:#e0ede9;background:var(--bg);">
+      </div>
+      <div><label for="msg-content" class="block text-xs font-semibold mb-1 uppercase tracking-wider" style="color:var(--secondary);">Message</label> <textarea id="msg-content" required rows="4" class="w-full px-4 py-3 rounded-xl border text-sm" style="border-color:#e0ede9;background:var(--bg);" placeholder="Type your message..."></textarea>
+      </div><button type="submit" class="btn-primary w-full py-3 rounded-xl text-white font-bold text-sm">Send Message</button>
+     </form>
+    </div>
+   </div><!-- ========== LANDING PAGE ========== -->
+   <div id="page-landing" class="w-full" style="min-height: 100%;">
+    <header class="w-full" style="min-height: 100%; position: relative; overflow: hidden;">
+     <div class="orb" style="width:300px;height:300px;top:-50px;right:-50px;animation-delay:0s;"></div>
+     <div class="orb" style="width:200px;height:200px;bottom:10%;left:5%;animation-delay:2s;"></div>
+     <div class="orb" style="width:250px;height:250px;top:40%;right:20%;animation-delay:4s;"></div>
+     <nav class="flex items-center justify-between px-6 py-4 relative z-10" style="max-width:1200px;margin:0 auto;">
+      <div class="flex items-center gap-2">
+       <svg width="36" height="36" viewbox="0 0 36 36" fill="none"><circle cx="18" cy="18" r="16" stroke="var(--primary)" stroke-width="2.5" fill="none" /> <path d="M18 6 C18 6 10 14 10 20 C10 24.4 13.6 28 18 28 C22.4 28 26 24.4 26 20 C26 14 18 6 18 6Z" fill="var(--primary)" opacity="0.3" /> <circle cx="18" cy="19" r="4" fill="var(--primary)" />
+       </svg><span id="nav-title" class="text-lg font-bold" style="font-family:'Playfair Display',serif; color:var(--primary);">LUMINARI</span>
+      </div><button onclick="showPage('auth')" class="px-5 py-2 rounded-full text-sm font-semibold" style="border: 2px solid var(--primary); color: var(--primary); background: transparent; transition: all 0.3s;" onmouseover="this.style.background='var(--primary)';this.style.color='white'" onmouseout="this.style.background='transparent';this.style.color='var(--primary)'">Sign In</button>
+     </nav>
+     <main class="flex flex-col items-center justify-center text-center px-6 py-20 relative z-10" style="min-height:80%;">
+      <p id="el-tagline" class="text-sm tracking-widest uppercase mb-4 anim-fade" style="color:var(--secondary); font-family:'Space Mono',monospace; letter-spacing: 4px;">Your mind deserves the best care</p>
+      <h1 id="el-hero-title" class="hero-title mb-3 anim-fade-d1" style="line-height:1.1; font-size: clamp(3.5rem, 18vw, 12rem); letter-spacing: -2px;">CEREBRAL<br>
+       THERAPY</h1>
+      <p id="el-hero-subtitle" class="text-lg md:text-2xl mb-6 anim-fade-d2" style="color:var(--secondary); max-width:600px; font-weight: 300;">Digital Mental Health Care</p><button id="el-cta-btn" onclick="showPage('auth')" class="btn-primary text-white font-bold px-12 py-5 rounded-full text-xl tracking-widest anim-fade-d3" style="animation-name: fadeInUp, pulse-glow; animation-duration: 0.8s, 3s; animation-delay: 0.6s, 1.4s; animation-iteration-count: 1, infinite; animation-fill-mode: forwards, none; opacity:0;"> BEGIN YOUR JOURNEY </button>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-20 w-full" style="max-width:900px;">
+       <div class="card-hover rounded-2xl p-6 text-center anim-fade-d1" style="background:var(--surface);">
+        <div class="text-3xl mb-3">
+         🧠
+        </div>
+        <h3 class="font-bold mb-2">AI-Powered Support</h3>
+        <p class="text-sm" style="color:var(--secondary);">24/7 intelligent chatbot for mental wellness guidance</p>
+       </div>
+       <div class="card-hover rounded-2xl p-6 text-center anim-fade-d2" style="background:var(--surface);">
+        <div class="text-3xl mb-3">
+         👨‍⚕️
+        </div>
+        <h3 class="font-bold mb-2">Expert Psychologists</h3>
+        <p class="text-sm" style="color:var(--secondary);">Connect with licensed professionals for consultations</p>
+       </div>
+       <div class="card-hover rounded-2xl p-6 text-center anim-fade-d3" style="background:var(--surface);">
+        <div class="text-3xl mb-3">
+         🎮
+        </div>
+        <h3 class="font-bold mb-2">Therapeutic Games</h3>
+        <p class="text-sm" style="color:var(--secondary);">Fun exercises designed to boost your mental health</p>
+       </div>
+      </div>
+     </main>
+    </header>
+   </div><!-- ========== AUTH PAGE ========== -->
+   <div id="page-auth" class="hidden w-full" style="min-height:100%; display:none;">
+    <div class="flex flex-col items-center justify-center w-full px-4 py-12" style="min-height:100%;">
+     <div class="text-center mb-20">
+      <h1 class="hero-title anim-fade" style="font-size: clamp(2rem, 10vw, 4rem); line-height: 1.1; letter-spacing: -2px; margin-bottom: 0.5rem;">CEREBRAL<br>
+       THERAPY</h1>
+      <p class="text-lg anim-fade-d1" style="color:var(--secondary); font-weight: 300;">Digital Mental Health Care</p>
+     </div>
+     <div class="w-full rounded-3xl p-8 md:p-12 anim-fade" style="max-width:460px; background:var(--surface); box-shadow: 0 20px 60px rgba(43,168,158,0.1);"><button onclick="showPage('landing')" class="flex items-center gap-2 text-sm mb-6" style="color:var(--secondary);">
+       <svg width="16" height="16" viewbox="0 0 16 16" fill="currentColor">
+        <path d="M10 12l-4-4 4-4" stroke="currentColor" stroke-width="2" fill="none" />
+       </svg> Back </button>
+      <div class="text-center mb-8">
+       <h2 class="text-2xl font-bold mb-1" style="font-family:'Playfair Display',serif;">Welcome</h2>
+       <p class="text-sm" style="color:var(--secondary);">Sign in or create your account</p>
+      </div>
+      <div class="flex rounded-xl mb-6 p-1" style="background:var(--bg);"><button id="tab-login" onclick="switchAuthTab('login')" class="flex-1 py-2 rounded-lg text-sm font-semibold transition-all" style="background:var(--primary);color:white;">Login</button> <button id="tab-register" onclick="switchAuthTab('register')" class="flex-1 py-2 rounded-lg text-sm font-semibold transition-all" style="background:transparent;color:var(--secondary);">Register</button>
+      </div>
+      <form id="form-login" onsubmit="handleLogin(event)" class="space-y-4">
+       <div><label for="login-username" class="block text-xs font-semibold mb-1 uppercase tracking-wider" style="color:var(--secondary);">Username</label> <input id="login-username" type="text" required class="w-full px-4 py-3 rounded-xl border text-sm" style="border-color:#e0ede9; background:var(--bg);" placeholder="Enter username">
+       </div>
+       <div><label for="login-password" class="block text-xs font-semibold mb-1 uppercase tracking-wider" style="color:var(--secondary);">Password</label> <input id="login-password" type="password" required class="w-full px-4 py-3 rounded-xl border text-sm" style="border-color:#e0ede9; background:var(--bg);" placeholder="Enter password">
+       </div><button type="submit" class="btn-primary w-full py-3 rounded-xl text-white font-bold text-sm">Sign In</button>
+      </form>
+      <form id="form-register" onsubmit="handleRegister(event)" class="space-y-4 hidden">
+       <div><label for="reg-name" class="block text-xs font-semibold mb-1 uppercase tracking-wider" style="color:var(--secondary);">Display Name</label> <input id="reg-name" type="text" required class="w-full px-4 py-3 rounded-xl border text-sm" style="border-color:#e0ede9; background:var(--bg);" placeholder="Your name">
+       </div>
+       <div><label for="reg-email" class="block text-xs font-semibold mb-1 uppercase tracking-wider" style="color:var(--secondary);">Email</label> <input id="reg-email" type="email" required class="w-full px-4 py-3 rounded-xl border text-sm" style="border-color:#e0ede9; background:var(--bg);" placeholder="you@email.com">
+       </div>
+       <div><label for="reg-username" class="block text-xs font-semibold mb-1 uppercase tracking-wider" style="color:var(--secondary);">Username</label> <input id="reg-username" type="text" required class="w-full px-4 py-3 rounded-xl border text-sm" style="border-color:#e0ede9; background:var(--bg);" placeholder="Choose username">
+        <div id="role-indicator" class="mt-2 px-3 py-2 rounded-lg text-xs font-semibold text-center" style="background:var(--bg);color:var(--primary);">
+         Role will be automatically assigned as Student
+        </div>
+       </div>
+       <div><label for="reg-password" class="block text-xs font-semibold mb-1 uppercase tracking-wider" style="color:var(--secondary);">Password</label> <input id="reg-password" type="password" required minlength="4" class="w-full px-4 py-3 rounded-xl border text-sm" style="border-color:#e0ede9; background:var(--bg);" placeholder="Create password">
+       </div><button type="submit" class="btn-primary w-full py-3 rounded-xl text-white font-bold text-sm">Create Account</button>
+      </form>
+     </div>
+    </div>
+   </div><!-- ========== STUDENT DASHBOARD ========== -->
+   <div id="page-student" class="hidden w-full h-full" style="display:none;">
+    <div class="flex h-full">
+     <aside class="sidebar flex-shrink-0 flex flex-col py-6 px-4 scrollbar-thin overflow-y-auto" style="width:240px; background:var(--surface); border-right:1px solid #e0ede9;">
+      <div class="flex items-center gap-2 px-3 mb-8">
+       <svg width="28" height="28" viewbox="0 0 36 36" fill="none">
+        <circle cx="18" cy="18" r="16" stroke="var(--primary)" stroke-width="2.5" fill="none" /><circle cx="18" cy="19" r="4" fill="var(--primary)" />
+       </svg><span class="font-bold text-sm" style="font-family:'Playfair Display',serif;color:var(--primary);">LUMINARI</span>
+      </div>
+      <nav class="flex-1 space-y-1"><button onclick="showStudentSection('dashboard')" class="nav-item active w-full text-left px-4 py-3 rounded-r-xl text-sm font-medium flex items-center gap-3 relative" data-section="dashboard"> <span>📊</span> Dashboard <span id="dash-badge" class="new-message-badge hidden"></span> </button> <button onclick="showStudentSection('assessment')" class="nav-item w-full text-left px-4 py-3 rounded-r-xl text-sm font-medium flex items-center gap-3" data-section="assessment"> <span>📝</span> Assessment </button> <button onclick="showStudentSection('chatbot')" class="nav-item w-full text-left px-4 py-3 rounded-r-xl text-sm font-medium flex items-center gap-3" data-section="chatbot"> <span>🤖</span> AI Chatbot </button> <button onclick="showStudentSection('games')" class="nav-item w-full text-left px-4 py-3 rounded-r-xl text-sm font-medium flex items-center gap-3" data-section="games"> <span>🎮</span> Games </button> <button onclick="showStudentSection('consult')" class="nav-item w-full text-left px-4 py-3 rounded-r-xl text-sm font-medium flex items-center gap-3" data-section="consult"> <span>👨‍⚕️</span> Consultations </button> <button onclick="showStudentSection('resources')" class="nav-item w-full text-left px-4 py-3 rounded-r-xl text-sm font-medium flex items-center gap-3" data-section="resources"> <span>📚</span> Resources </button> <button onclick="showStudentSection('messages')" class="nav-item w-full text-left px-4 py-3 rounded-r-xl text-sm font-medium flex items-center gap-3 relative" data-section="messages"> <span>💬</span> Messages <span id="msg-badge" class="new-message-badge hidden"></span> </button>
+      </nav><button onclick="handleLogout()" class="w-full text-left px-4 py-3 rounded-xl text-sm font-medium flex items-center gap-3 mt-4" style="color:#E74C3C;"> <span>🚪</span> Logout </button>
+     </aside>
+     <div class="flex-1 overflow-auto p-6 md:p-8">
+      <div class="flex items-center justify-between mb-8">
+       <div>
+        <h1 class="text-2xl font-bold" style="font-family:'Playfair Display',serif;">Welcome back, <span id="student-name">Student</span></h1>
+        <p class="text-sm" style="color:var(--secondary);">How are you feeling today?</p>
+       </div>
+       <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold" style="background:var(--primary);"><span id="student-avatar">S</span>
+        </div>
+       </div>
+      </div><!-- Student: Dashboard -->
+      <section id="sec-dashboard" class="space-y-6">
+       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="card-hover rounded-2xl p-5" style="background:var(--surface);">
+         <div class="flex items-center justify-between mb-3"><span class="text-2xl">🧠</span> <span class="text-xs px-2 py-1 rounded-full font-semibold" style="background:rgba(43,168,158,0.1);color:var(--primary);">Mental Health</span>
+         </div>
+         <p class="text-xs" style="color:var(--secondary);">Last Assessment</p>
+         <p id="dash-score" class="text-2xl font-bold" style="color:var(--primary);">Not taken</p>
+        </div>
+        <div class="card-hover rounded-2xl p-5" style="background:var(--surface);">
+         <div class="flex items-center justify-between mb-3"><span class="text-2xl">💬</span> <span class="text-xs px-2 py-1 rounded-full font-semibold" style="background:rgba(43,168,158,0.1);color:var(--primary);">Support</span>
+         </div>
+         <p class="text-xs" style="color:var(--secondary);">AI Chatbot</p>
+         <p class="text-2xl font-bold" style="color:var(--primary);">Available</p>
+        </div>
+        <div class="card-hover rounded-2xl p-5" style="background:var(--surface);">
+         <div class="flex items-center justify-between mb-3"><span class="text-2xl">👨‍⚕️</span> <span class="text-xs px-2 py-1 rounded-full font-semibold" style="background:rgba(43,168,158,0.1);color:var(--primary);">Consultations</span>
+         </div>
+         <p class="text-xs" style="color:var(--secondary);">Pending</p>
+         <p id="dash-consults" class="text-2xl font-bold" style="color:var(--primary);">0</p>
+        </div>
+       </div>
+       <div class="rounded-2xl p-6" style="background:var(--surface);">
+        <h3 class="font-bold mb-4" style="font-family:'Playfair Display',serif;">Quick Actions</h3>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3"><button onclick="showStudentSection('assessment')" class="card-hover rounded-xl p-4 text-center" style="background:var(--bg);">
+          <div class="text-2xl mb-2">
+           📝
+          </div><p class="text-xs font-semibold">Take Assessment</p></button> <button onclick="showStudentSection('chatbot')" class="card-hover rounded-xl p-4 text-center" style="background:var(--bg);">
+          <div class="text-2xl mb-2">
+           🤖
+          </div><p class="text-xs font-semibold">Chat with AI</p></button> <button onclick="showStudentSection('games')" class="card-hover rounded-xl p-4 text-center" style="background:var(--bg);">
+          <div class="text-2xl mb-2">
+           🎮
+          </div><p class="text-xs font-semibold">Play Games</p></button> <button onclick="showStudentSection('consult')" class="card-hover rounded-xl p-4 text-center" style="background:var(--bg);">
+          <div class="text-2xl mb-2">
+           👨‍⚕️
+          </div><p class="text-xs font-semibold">Book Consult</p></button>
+        </div>
+       </div>
+       <div class="rounded-2xl p-6" style="background: linear-gradient(135deg, var(--primary), #1A8A7E); color: white;">
+        <h3 class="font-bold mb-2" style="font-family:'Playfair Display',serif;">💡 Daily Wellness Tip</h3>
+        <p class="text-sm opacity-90" id="daily-tip">Take 5 deep breaths right now. Inhale for 4 seconds, hold for 4, exhale for 6.</p>
+       </div>
+      </section><!-- Student: Assessment -->
+      <section id="sec-assessment" class="hidden space-y-6">
+       <div class="rounded-2xl p-6 md:p-8" style="background:var(--surface);">
+        <h2 class="text-xl font-bold mb-2" style="font-family:'Playfair Display',serif;">Mental Health Assessment</h2>
+        <p class="text-sm mb-6" style="color:var(--secondary);">Answer these 10 questions honestly. Your responses help us understand your mental well-being.</p>
+        <div id="assessment-container"></div>
+        <div id="assessment-result" class="hidden mt-6 rounded-2xl p-6 text-center" style="background:var(--bg);"></div>
+       </div>
+      </section><!-- Student: Chatbot -->
+      <section id="sec-chatbot" class="hidden" style="height:calc(100% - 100px);">
+       <div class="rounded-2xl flex flex-col h-full" style="background:var(--surface);">
+        <div class="p-4 border-b flex items-center gap-3" style="border-color:#e0ede9;">
+         <div class="w-10 h-10 rounded-full flex items-center justify-center" style="background:var(--bg);">
+          🤖
+         </div>
+         <div>
+          <h3 class="font-bold text-sm">Luminari AI Assistant</h3>
+          <p class="text-xs" style="color:var(--secondary);">Always here to support you</p>
+         </div><span class="ml-auto w-2 h-2 rounded-full" style="background:#2ECC71;"></span>
+        </div>
+        <div id="chat-messages" class="flex-1 overflow-auto p-4 space-y-2 scrollbar-thin" style="min-height:200px;">
+         <div class="chat-bubble chat-bot">
+          Hello! 👋 I'm your AI mental health companion. I'm here to listen and support you. How are you feeling today?
+         </div>
+        </div>
+        <form onsubmit="handleChatSend(event)" class="p-4 border-t flex gap-2" style="border-color:#e0ede9;"><label for="chat-input" class="sr-only">Type a message</label> <input id="chat-input" type="text" class="flex-1 px-4 py-3 rounded-xl border text-sm" style="border-color:#e0ede9;background:var(--bg);" placeholder="Type your message..." autocomplete="off"> <button type="submit" class="btn-primary px-5 py-3 rounded-xl text-white text-sm font-semibold">Send</button>
+        </form>
+       </div>
+      </section><!-- Student: Games -->
+      <section id="sec-games" class="hidden space-y-6">
+       <h2 class="text-xl font-bold" style="font-family:'Playfair Display',serif;">   Therapeutic Games</h2>
+       <div class="grid grid-cols-1 md:grid-cols-2 gap-6"><!-- Memory Game -->
+        <div class="rounded-2xl p-6" style="background:var(--surface);">
+         <h3 class="font-bold mb-1">🧩 Memory Match</h3>
+         <p class="text-xs mb-4" style="color:var(--secondary);">Match the pairs to exercise your memory</p>
+         <div id="memory-game" class="grid grid-cols-4 gap-2 mb-4"></div>
+         <div class="flex items-center justify-between"><span id="memory-moves" class="text-sm font-semibold" style="color:var(--primary);">Moves: 0</span> <button onclick="initMemoryGame()" class="px-4 py-2 rounded-lg text-xs font-semibold" style="background:var(--bg);color:var(--primary);">Reset</button>
+         </div>
+        </div><!-- Breathing Exercise -->
+        <div class="rounded-2xl p-6 text-center" style="background:var(--surface);">
+         <h3 class="font-bold mb-1">    Breathing Exercise</h3>
+         <p class="text-xs mb-6" style="color:var(--secondary);">Follow the circle to calm your mind</p>
+         <div class="flex justify-center mb-6">
+          <div id="breath-circle" class="rounded-full flex items-center justify-center transition-all duration-1000" style="width:120px;height:120px;background:linear-gradient(135deg,var(--primary),var(--secondary));"><span id="breath-text" class="text-white font-bold text-sm">Start</span>
+          </div>
+         </div><button id="breath-btn" onclick="startBreathing()" class="px-6 py-2 rounded-lg text-sm font-semibold" style="background:var(--bg);color:var(--primary);">Begin</button>
+        </div><!-- Word Search Game -->
+        <div class="rounded-2xl p-6" style="background:var(--surface);">
+         <h3 class="font-bold mb-1">🔤 Word Unscramble</h3>
+         <p class="text-xs mb-4" style="color:var(--secondary);">Unscramble the wellness words</p>
+         <div id="word-game" class="space-y-3"></div><button onclick="initWordGame()" class="mt-4 px-4 py-2 rounded-lg text-xs font-semibold" style="background:var(--bg);color:var(--primary);">New Game</button>
+        </div><!-- Gratitude Journal -->
+        <div class="rounded-2xl p-6" style="background:var(--surface);">
+         <h3 class="font-bold mb-1">📓 Gratitude Journal</h3>
+         <p class="text-xs mb-4" style="color:var(--secondary);">Write 3 things you're grateful for today</p>
+         <div class="space-y-2">
+          <div class="flex items-center gap-2"><span class="text-lg">1.</span> <label for="grat1" class="sr-only">Gratitude item 1</label> <input id="grat1" type="text" class="flex-1 px-3 py-2 rounded-lg border text-sm" style="border-color:#e0ede9;background:var(--bg);" placeholder="I'm grateful for...">
+          </div>
+          <div class="flex items-center gap-2"><span class="text-lg">2.</span> <label for="grat2" class="sr-only">Gratitude item 2</label> <input id="grat2" type="text" class="flex-1 px-3 py-2 rounded-lg border text-sm" style="border-color:#e0ede9;background:var(--bg);" placeholder="I'm grateful for...">
+          </div>
+          <div class="flex items-center gap-2"><span class="text-lg">3.</span> <label for="grat3" class="sr-only">Gratitude item 3</label> <input id="grat3" type="text" class="flex-1 px-3 py-2 rounded-lg border text-sm" style="border-color:#e0ede9;background:var(--bg);" placeholder="I'm grateful for...">
+          </div>
+         </div><button onclick="saveGratitude()" class="btn-primary mt-4 w-full py-2 rounded-lg text-white text-sm font-semibold">Save Entry</button>
+        </div><!-- Mood Tracker -->
+        <div class="rounded-2xl p-6 text-center" style="background:var(--surface);">
+         <h3 class="font-bold mb-1">😊 Mood Check-in</h3>
+         <p class="text-xs mb-4" style="color:var(--secondary);">How are you feeling right now?</p>
+         <div class="flex justify-center gap-4 mb-4" id="mood-emojis"><button onclick="selectMood('😢','Very Low')" class="text-3xl hover:scale-125 transition-transform" title="Very Low">😢</button> <button onclick="selectMood('  ','Low')" class="text-3xl hover:scale-125 transition-transform" title="Low">😔</button> <button onclick="selectMood('😐','Neutral')" class="text-3xl hover:scale-125 transition-transform" title="Neutral">😐</button> <button onclick="selectMood('😊','Good')" class="text-3xl hover:scale-125 transition-transform" title="Good">😊</button> <button onclick="selectMood('🤩','Excellent')" class="text-3xl hover:scale-125 transition-transform" title="Excellent">🤩</button>
+         </div>
+         <p id="mood-result" class="text-sm font-semibold" style="color:var(--primary);"></p>
+        </div><!-- Puzzle Game -->
+        <div class="rounded-2xl p-6" style="background:var(--surface);">
+         <h3 class="font-bold mb-1">🧩 Number Puzzle</h3>
+         <p class="text-xs mb-4" style="color:var(--secondary);">Complete the sequence</p>
+         <div id="puzzle-game" class="space-y-4"></div>
+        </div>
+       </div>
+      </section><!-- Student: Consultations -->
+      <section id="sec-consult" class="hidden space-y-6">
+       <h2 class="text-xl font-bold" style="font-family:'Playfair Display',serif;">👨‍⚕️ Psychologist Consultation</h2>
+       <div class="rounded-2xl p-6" style="background:var(--surface);">
+        <h3 class="font-bold mb-4">Available Psychologists</h3>
+        <div id="doctor-list" class="space-y-3"></div>
+        <div id="no-doctors" class="text-center py-8 text-sm" style="color:var(--secondary);">
+         <div class="text-3xl mb-2">
+          👨‍⚕️
+         </div> No psychologists registered yet. Check back later.
+        </div>
+       </div>
+       <div class="rounded-2xl p-6" style="background:var(--surface);">
+        <h3 class="font-bold mb-4">Request Consultation</h3>
+        <form onsubmit="requestConsultation(event)" class="space-y-4">
+         <div><label for="consult-doctor" class="block text-xs font-semibold mb-1 uppercase tracking-wider" style="color:var(--secondary);">Select Psychologist</label> <select id="consult-doctor" required class="w-full px-4 py-3 rounded-xl border text-sm" style="border-color:#e0ede9;background:var(--bg);"> <option value="">Choose a psychologist...</option> </select>
+         </div>
+         <div><label for="consult-msg" class="block text-xs font-semibold mb-1 uppercase tracking-wider" style="color:var(--secondary);">Describe your concern</label> <textarea id="consult-msg" required rows="4" class="w-full px-4 py-3 rounded-xl border text-sm" style="border-color:#e0ede9;background:var(--bg);" placeholder="Tell us briefly about what you'd like to discuss..."></textarea>
+         </div><button type="submit" id="consult-submit-btn" class="btn-primary w-full py-3 rounded-xl text-white font-bold text-sm">Submit Request</button>
+        </form>
+       </div>
+       <div class="rounded-2xl p-6" style="background:var(--surface);">
+        <h3 class="font-bold mb-4">My Consultations</h3>
+        <div id="my-consults" class="space-y-3"></div>
+        <div id="no-consults" class="text-center py-8 text-sm" style="color:var(--secondary);">
+         <div class="text-3xl mb-2">
+          📋
+         </div> No consultations yet. Request one above.
+        </div>
+       </div>
+      </section><!-- Student: Resources -->
+      <section id="sec-resources" class="hidden space-y-6">
+       <h2 class="text-xl font-bold" style="font-family:'Playfair Display',serif;">📚 Mental Health Resources</h2>
+       <div class="rounded-2xl p-6" style="background:var(--surface);">
+        <h3 class="font-bold mb-4">📖 Books &amp; Guides</h3>
+        <div id="resources-books" class="space-y-3"></div>
+        <div id="no-books" class="text-center py-6 text-sm" style="color:var(--secondary);">
+         <div class="text-2xl mb-2">
+          📖
+         </div> No books added yet
+        </div>
+       </div>
+       <div class="rounded-2xl p-6" style="background:var(--surface);">
+        <h3 class="font-bold mb-4">🎬 Videos</h3>
+        <div id="resources-videos" class="space-y-3"></div>
+        <div id="no-videos" class="text-center py-6 text-sm" style="color:var(--secondary);">
+         <div class="text-2xl mb-2">
+          🎬
+         </div> No videos added yet
+        </div>
+       </div>
+       <div class="rounded-2xl p-6" style="background:var(--surface);">
+        <h3 class="font-bold mb-4">🎵 Audio Resources</h3>
+        <div id="resources-audio" class="space-y-3"></div>
+        <div id="no-audio" class="text-center py-6 text-sm" style="color:var(--secondary);">
+         <div class="text-2xl mb-2">
+          🎵
+         </div> No audio resources added yet
+        </div>
+       </div>
+      </section><!-- Student: Messages -->
+      <section id="sec-messages" class="hidden space-y-6" style="height:calc(100% - 100px);">
+       <h2 class="text-xl font-bold" style="font-family:'Playfair Display',serif;">💬 Admin Messages</h2>
+       <div class="rounded-2xl flex flex-col h-full" style="background:var(--surface);">
+        <div id="student-messages" class="flex-1 overflow-auto p-4 space-y-3 scrollbar-thin">
+         <div class="text-center py-12 text-sm" style="color:var(--secondary);">
+          <div class="text-4xl mb-2">
+           📬
+          </div> No messages from admin yet
+         </div>
+        </div>
+       </div>
+      </section>
+     </div>
+    </div>
+   </div><!-- ========== DOCTOR DASHBOARD ========== -->
+   <div id="page-doctor" class="hidden w-full h-full" style="display:none;">
+    <div class="flex h-full">
+     <aside class="sidebar flex-shrink-0 flex flex-col py-6 px-4" style="width:240px;background:var(--surface);border-right:1px solid #e0ede9;">
+      <div class="flex items-center gap-2 px-3 mb-8">
+       <svg width="28" height="28" viewbox="0 0 36 36" fill="none">
+        <circle cx="18" cy="18" r="16" stroke="var(--primary)" stroke-width="2.5" fill="none" /><circle cx="18" cy="19" r="4" fill="var(--primary)" />
+       </svg><span class="font-bold text-sm" style="font-family:'Playfair Display',serif;color:var(--primary);">LUMINARI</span>
+      </div>
+      <nav class="flex-1 space-y-1"><button onclick="showDoctorSection('overview')" class="nav-item active w-full text-left px-4 py-3 rounded-r-xl text-sm font-medium flex items-center gap-3" data-section="overview"> <span>📊</span> Overview </button> <button onclick="showDoctorSection('requests')" class="nav-item w-full text-left px-4 py-3 rounded-r-xl text-sm font-medium flex items-center gap-3" data-section="requests"> <span>📨</span> Requests </button> <button onclick="showDoctorSection('patients')" class="nav-item w-full text-left px-4 py-3 rounded-r-xl text-sm font-medium flex items-center gap-3" data-section="patients"> <span>👥</span> My Patients </button> <button onclick="showDoctorSection('messages')" class="nav-item w-full text-left px-4 py-3 rounded-r-xl text-sm font-medium flex items-center gap-3 relative" data-section="messages"> <span>💬</span> Messages <span id="doc-msg-badge" class="new-message-badge hidden"></span> </button>
+      </nav><button onclick="handleLogout()" class="w-full text-left px-4 py-3 rounded-xl text-sm font-medium flex items-center gap-3 mt-4" style="color:#E74C3C;"> <span>🚪</span> Logout </button>
+     </aside>
+     <div class="flex-1 overflow-auto p-6 md:p-8">
+      <div class="flex items-center justify-between mb-8">
+       <div>
+        <h1 class="text-2xl font-bold" style="font-family:'Playfair Display',serif;">Dr. <span id="doctor-name">Doctor</span></h1>
+        <p class="text-sm" style="color:var(--secondary);">Psychologist Dashboard</p>
+       </div>
+       <div class="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold" style="background:var(--primary);"><span id="doctor-avatar">D</span>
+       </div>
+      </div><!-- Doctor: Overview -->
+      <section id="doc-overview" class="space-y-6">
+       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="card-hover rounded-2xl p-5" style="background:var(--surface);"><span class="text-2xl">📨</span>
+         <p class="text-xs mt-2" style="color:var(--secondary);">Pending Requests</p>
+         <p id="doc-pending" class="text-2xl font-bold" style="color:var(--primary);">0</p>
+        </div>
+        <div class="card-hover rounded-2xl p-5" style="background:var(--surface);"><span class="text-2xl">✅</span>
+         <p class="text-xs mt-2" style="color:var(--secondary);">Active Patients</p>
+         <p id="doc-active" class="text-2xl font-bold" style="color:var(--primary);">0</p>
+        </div>
+        <div class="card-hover rounded-2xl p-5" style="background:var(--surface);"><span class="text-2xl">📋</span>
+         <p class="text-xs mt-2" style="color:var(--secondary);">Total Consultations</p>
+         <p id="doc-total" class="text-2xl font-bold" style="color:var(--primary);">0</p>
+        </div>
+       </div>
+      </section><!-- Doctor: Requests -->
+      <section id="doc-requests" class="hidden space-y-6">
+       <h2 class="text-xl font-bold" style="font-family:'Playfair Display',serif;">📨 Consultation Requests</h2>
+       <div id="doc-request-list" class="space-y-3"></div>
+       <div id="no-doc-requests" class="text-center py-12 text-sm rounded-2xl" style="color:var(--secondary);background:var(--surface);">
+        <div class="text-4xl mb-3">
+         📭
+        </div> No pending requests right now
+       </div>
+      </section><!-- Doctor: Patients -->
+      <section id="doc-patients" class="hidden space-y-6">
+       <h2 class="text-xl font-bold" style="font-family:'Playfair Display',serif;">👥 My Patients</h2>
+       <div id="doc-patient-list" class="space-y-3"></div>
+       <div id="no-doc-patients" class="text-center py-12 text-sm rounded-2xl" style="color:var(--secondary);background:var(--surface);">
+        <div class="text-4xl mb-3">
+         👥
+        </div> No active patients yet
+       </div>
+      </section><!-- Doctor: Messages -->
+      <section id="doc-messages" class="hidden space-y-6" style="height:calc(100% - 100px);">
+       <h2 class="text-xl font-bold" style="font-family:'Playfair Display',serif;">💬 Messages from Admin</h2>
+       <div class="rounded-2xl flex flex-col h-full" style="background:var(--surface);">
+        <div id="doctor-messages" class="flex-1 overflow-auto p-4 space-y-3 scrollbar-thin">
+         <div class="text-center py-12 text-sm" style="color:var(--secondary);">
+          <div class="text-4xl mb-2">
+           📬
+          </div> No messages from admin yet
+         </div>
+        </div>
+       </div>
+      </section>
+     </div>
+    </div>
+   </div><!-- ========== ADMIN DASHBOARD ========== -->
+   <div id="page-admin" class="hidden w-full h-full" style="display:none;">
+    <div class="flex h-full">
+     <aside class="sidebar flex-shrink-0 flex flex-col py-6 px-4" style="width:240px;background:var(--surface);border-right:1px solid #e0ede9;">
+      <div class="flex items-center gap-2 px-3 mb-8">
+       <svg width="28" height="28" viewbox="0 0 36 36" fill="none">
+        <circle cx="18" cy="18" r="16" stroke="var(--primary)" stroke-width="2.5" fill="none" /><circle cx="18" cy="19" r="4" fill="var(--primary)" />
+       </svg><span class="font-bold text-sm" style="font-family:'Playfair Display',serif;color:var(--primary);">LUMINARI</span>
+      </div>
+      <nav class="flex-1 space-y-1"><button onclick="showAdminSection('overview')" class="nav-item active w-full text-left px-4 py-3 rounded-r-xl text-sm font-medium flex items-center gap-3" data-section="overview"> <span>📊</span> Overview </button> <button onclick="showAdminSection('users')" class="nav-item w-full text-left px-4 py-3 rounded-r-xl text-sm font-medium flex items-center gap-3" data-section="users"> <span>👥</span> Users </button> <button onclick="showAdminSection('consultations')" class="nav-item w-full text-left px-4 py-3 rounded-r-xl text-sm font-medium flex items-center gap-3" data-section="consultations"> <span>📋</span> Consultations </button> <button onclick="showAdminSection('resources')" class="nav-item w-full text-left px-4 py-3 rounded-r-xl text-sm font-medium flex items-center gap-3" data-section="resources"> <span>📚</span> Resources </button> <button onclick="showAdminSection('messaging')" class="nav-item w-full text-left px-4 py-3 rounded-r-xl text-sm font-medium flex items-center gap-3" data-section="messaging"> <span>💬</span> Messaging </button>
+      </nav><button onclick="handleLogout()" class="w-full text-left px-4 py-3 rounded-xl text-sm font-medium flex items-center gap-3 mt-4" style="color:#E74C3C;"> <span>🚪</span> Logout </button>
+     </aside>
+     <div class="flex-1 overflow-auto p-6 md:p-8">
+      <div class="flex items-center justify-between mb-8">
+       <div>
+        <h1 class="text-2xl font-bold" style="font-family:'Playfair Display',serif;">Admin Panel</h1>
+        <p class="text-sm" style="color:var(--secondary);">System Management</p>
+       </div>
+       <div class="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold" style="background:#E74C3C;">
+        ⚙️
+       </div>
+      </div><!-- Admin: Overview -->
+      <section id="admin-overview" class="space-y-6">
+       <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="card-hover rounded-2xl p-5" style="background:var(--surface);"><span class="text-2xl">👥</span>
+         <p class="text-xs mt-2" style="color:var(--secondary);">Total Users</p>
+         <p id="admin-users-count" class="text-2xl font-bold" style="color:var(--primary);">0</p>
+        </div>
+        <div class="card-hover rounded-2xl p-5" style="background:var(--surface);"><span class="text-2xl">🎓</span>
+         <p class="text-xs mt-2" style="color:var(--secondary);">Students</p>
+         <p id="admin-students-count" class="text-2xl font-bold" style="color:var(--primary);">0</p>
+        </div>
+        <div class="card-hover rounded-2xl p-5" style="background:var(--surface);"><span class="text-2xl">👨‍⚕️</span>
+         <p class="text-xs mt-2" style="color:var(--secondary);">Doctors</p>
+         <p id="admin-doctors-count" class="text-2xl font-bold" style="color:var(--primary);">0</p>
+        </div>
+        <div class="card-hover rounded-2xl p-5" style="background:var(--surface);"><span class="text-2xl">📚</span>
+         <p class="text-xs mt-2" style="color:var(--secondary);">Resources</p>
+         <p id="admin-resources-count" class="text-2xl font-bold" style="color:var(--primary);">0</p>
+        </div>
+       </div>
+      </section><!-- Admin: Users -->
+      <section id="admin-users" class="hidden space-y-6">
+       <h2 class="text-xl font-bold" style="font-family:'Playfair Display',serif;">👥 User Management</h2>
+       <div class="rounded-2xl p-6" style="background:var(--surface);">
+        <div class="flex items-center gap-3 mb-4"><label for="admin-user-filter" class="sr-only">Filter users</label> <select id="admin-user-filter" onchange="renderAdminUsers()" class="px-4 py-2 rounded-xl border text-sm" style="border-color:#e0ede9;background:var(--bg);"> <option value="all">All Roles</option> <option value="student">Students</option> <option value="doctor">Doctors</option> <option value="admin">Admins</option> </select>
+        </div>
+        <div id="admin-user-list" class="space-y-2"></div>
+        <div id="no-admin-users" class="text-center py-8 text-sm" style="color:var(--secondary);">
+         No users found
+        </div>
+       </div>
+      </section><!-- Admin: Consultations -->
+      <section id="admin-consultations" class="hidden space-y-6">
+       <h2 class="text-xl font-bold" style="font-family:'Playfair Display',serif;">📋 All Consultations</h2>
+       <div id="admin-consult-list" class="space-y-3"></div>
+       <div id="no-admin-consults" class="text-center py-12 text-sm rounded-2xl" style="color:var(--secondary);background:var(--surface);">
+        <div class="text-4xl mb-3">
+         📋
+        </div> No consultations in the system
+       </div>
+      </section><!-- Admin: Resources -->
+      <section id="admin-resources" class="hidden space-y-6">
+       <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xl font-bold" style="font-family:'Playfair Display',serif;">📚 Resource Management</h2><button onclick="openResourceModal()" class="btn-primary px-4 py-2 rounded-xl text-white text-sm font-semibold flex items-center gap-2"> <span>+</span> Add Resource </button>
+       </div>
+       <div class="rounded-2xl p-6" style="background:var(--surface);">
+        <h3 class="font-bold mb-4">    Books</h3>
+        <div id="admin-books" class="space-y-3"></div>
+        <div id="admin-no-books" class="text-center py-6 text-sm" style="color:var(--secondary);">
+         <div class="text-2xl mb-2">
+          📖
+         </div> No books added yet
+        </div>
+       </div>
+       <div class="rounded-2xl p-6" style="background:var(--surface);">
+        <h3 class="font-bold mb-4">🎬 Videos</h3>
+        <div id="admin-videos" class="space-y-3"></div>
+        <div id="admin-no-videos" class="text-center py-6 text-sm" style="color:var(--secondary);">
+         <div class="text-2xl mb-2">
+              
+         </div> No videos added yet
+        </div>
+       </div>
+       <div class="rounded-2xl p-6" style="background:var(--surface);">
+        <h3 class="font-bold mb-4">🎵 Audio Resources</h3>
+        <div id="admin-audio" class="space-y-3"></div>
+        <div id="admin-no-audio" class="text-center py-6 text-sm" style="color:var(--secondary);">
+         <div class="text-2xl mb-2">
+          🎵
+         </div> No audio resources added yet
+        </div>
+       </div>
+      </section><!-- Admin: Messaging -->
+      <section id="admin-messaging" class="hidden space-y-6">
+       <h2 class="text-xl font-bold" style="font-family:'Playfair Display',serif;">💬 Send Messages</h2>
+       <div class="rounded-2xl p-6" style="background:var(--surface);">
+        <h3 class="font-bold mb-4">Students &amp; Doctors</h3>
+        <div id="admin-message-users" class="space-y-2"></div>
+        <div id="admin-no-message-users" class="text-center py-8 text-sm" style="color:var(--secondary);">
+         <div class="text-3xl mb-2">
+          👥
+         </div> No users available to message
+        </div>
+       </div>
+       <div class="rounded-2xl p-6" style="background:var(--surface);">
+        <h3 class="font-bold mb-4">Sent Messages</h3>
+        <div id="admin-sent-messages" class="space-y-3"></div>
+        <div id="admin-no-sent-messages" class="text-center py-8 text-sm" style="color:var(--secondary);">
+         <div class="text-3xl mb-2">
+            
+         </div> No messages sent yet
+        </div>
+       </div>
+      </section>
+     </div>
+    </div>
+   </div>
+  </div>
+  <script>
+// ===================== STATE =====================
+let allData = [];
+let currentUser = null;
+let memoryCards = [];
+let memoryFlipped = [];
+let memoryMatched = [];
+let memoryMoves = 0;
+let memoryLocked = false;
+let breathInterval = null;
+let wordGameData = [];
+
+const defaultConfig = {
+  site_title: 'LUMINARI',
+  hero_title: 'CEREBRAL THERAPY',
+  hero_subtitle: 'Digital Mental Health Care',
+  cta_button_text: 'BEGIN YOUR JOURNEY',
+  tagline: 'Your mind deserves the best care',
+  background_color: '#E8F4F0',
+  surface_color: '#FFFFFF',
+  text_color: '#1A3A3A',
+  primary_color: '#2BA89E',
+  secondary_color: '#7EC8C0',
+  font_family: 'DM Sans',
+  font_size: 16
+};
+
+const assessmentQuestions = [
+  { q: "How often have you felt down, depressed, or hopeless in the past 2 weeks?", opts: ["Not at all", "Several days", "More than half the days", "Nearly every day"] },
+  { q: "How often have you had little interest or pleasure in doing things?", opts: ["Not at all", "Several days", "More than half the days", "Nearly every day"] },
+  { q: "How often have you had trouble falling or staying asleep?", opts: ["Not at all", "Several days", "More than half the days", "Nearly every day"] },
+  { q: "How often have you felt tired or had little energy?", opts: ["Not at all", "Several days", "More than half the days", "Nearly every day"] },
+  { q: "How often have you had poor appetite or been overeating?", opts: ["Not at all", "Several days", "More than half the days", "Nearly every day"] },
+  { q: "How often have you felt bad about yourself or felt like a failure?", opts: ["Not at all", "Several days", "More than half the days", "Nearly every day"] },
+  { q: "How often have you had trouble concentrating on things?", opts: ["Not at all", "Several days", "More than half the days", "Nearly every day"] },
+  { q: "How often have you felt nervous, anxious, or on edge?", opts: ["Not at all", "Several days", "More than half the days", "Nearly every day"] },
+  { q: "How often have you been unable to stop or control worrying?", opts: ["Not at all", "Several days", "More than half the days", "Nearly every day"] },
+  { q: "How well do you feel you're managing stress in your daily life?", opts: ["Very well", "Fairly well", "Not very well", "Not at all well"] }
+];
+
+const chatResponses = {
+  greeting: ["Hello! I'm glad you're here. How can I support you today?", "Welcome! I'm your mental wellness companion. What's on your mind?"],
+  anxious: ["I hear you. Anxiety can feel overwhelming, but remember: feelings are temporary. Try taking 3 slow, deep breaths right now.", "It's completely valid to feel anxious. One technique that helps: name 5 things you can see, 4 you can touch, 3 you can hear, 2 you can smell, and 1 you can taste."],
+  sad: ["I'm sorry you're feeling this way. It takes courage to acknowledge sadness. Remember that it's okay to not be okay.", "Your feelings are valid. Sometimes writing down what you're feeling can help process emotions."],
+  stressed: ["Stress is your body's way of responding to demands. What feels most overwhelming right now?", "I understand. Remember: you don't have to solve everything at once. Focus on what you can control right now."],
+  sleep: ["Sleep difficulties are common and treatable. Try this tonight: dim lights 1 hour before bed, avoid screens, and keep your room cool.", "Poor sleep can affect everything else. Consider creating a wind-down routine."],
+  lonely: ["Feeling lonely is more common than you might think. You've taken a brave step by reaching out here.", "Connection is a basic human need. Even small interactions count."],
+  default: ["Thank you for sharing. I'm here to listen without judgment. Can you tell me more about what you're experiencing?", "I appreciate your openness. Every feeling is valid. What would feel most helpful for you right now?", "I'm here for you. Remember, seeking support is a sign of strength, not weakness."]
+};
+
+const wordGames = [
+  { word: 'MINDFUL', hint: 'Being present and aware' },
+  { word: 'WELLNESS', hint: 'State of good health' },
+  { word: 'THERAPY', hint: 'Treatment for mental health' },
+  { word: 'RESILIENCE', hint: 'Ability to bounce back' },
+  { word: 'HARMONY', hint: 'Balance and peace' }
+];
+
+// ===================== UTILITY FUNCTIONS =====================
+function showToast(message, type = 'success') {
+  const container = document.getElementById('toast-container');
+  const toast = document.createElement('div');
+  toast.className = `toast toast-${type} anim-bounce`;
+  toast.textContent = message;
+  container.appendChild(toast);
+  setTimeout(() => toast.remove(), 3000);
+}
+
+function detectRole(username) {
+  if (username.includes('@adminhere26')) return 'admin';
+  if (username.includes('@dctrhere26')) return 'doctor';
+  return 'student';
+}
+
+function getUsers() { return allData.filter(d => d.type === 'user'); }
+function getConsultations() { return allData.filter(d => d.type === 'consultation'); }
+function getResources() { return allData.filter(d => d.type === 'resource'); }
+function getMessages() { return allData.filter(d => d.type === 'message'); }
+
+function showPage(page) {
+  ['landing','auth','student','doctor','admin'].forEach(p => {
+    const el = document.getElementById('page-' + p);
+    el.classList.add('hidden');
+    el.style.display = 'none';
+  });
+  const target = document.getElementById('page-' + page);
+  target.classList.remove('hidden');
+  target.style.display = '';
+}
+
+function switchAuthTab(tab) {
+  const loginTab = document.getElementById('tab-login');
+  const regTab = document.getElementById('tab-register');
+  const loginForm = document.getElementById('form-login');
+  const regForm = document.getElementById('form-register');
+  if (tab === 'login') {
+    loginTab.style.background = 'var(--primary)'; loginTab.style.color = 'white';
+    regTab.style.background = 'transparent'; regTab.style.color = 'var(--secondary)';
+    loginForm.classList.remove('hidden'); regForm.classList.add('hidden');
+  } else {
+    regTab.style.background = 'var(--primary)'; regTab.style.color = 'white';
+    loginTab.style.background = 'transparent'; loginTab.style.color = 'var(--secondary)';
+    regForm.classList.remove('hidden'); loginForm.classList.add('hidden');
+  }
+}
+
+async function handleRegister(e) {
+  e.preventDefault();
+  const name = document.getElementById('reg-name').value.trim();
+  const email = document.getElementById('reg-email').value.trim();
+  const username = document.getElementById('reg-username').value.trim();
+  const password = document.getElementById('reg-password').value;
+  
+  if (!name || !email || !username || !password) { showToast('Please fill all fields', 'error'); return; }
+  
+  const existing = getUsers().find(u => u.username === username);
+  if (existing) { showToast('Username already taken', 'error'); return; }
+  
+  const role = detectRole(username);
+  
+  const result = await window.dataSdk.create({
+    type: 'user', email, username, password, role, display_name: name,
+    created_at: new Date().toISOString(), assessment_score: -1,
+    assessment_date: '', consultation_status: '', consultation_doctor: '',
+    consultation_student: '', consultation_message: '', consultation_reply: '',
+    content_title: '', content_body: '', content_type: '', content_link: '',
+    chat_message: '', chat_sender: '', chat_recipient: '', chat_timestamp: '',
+    is_active: true
+  });
+  
+  if (result.isOk) {
+    showToast('Account created! Please login.', 'success');
+    switchAuthTab('login');
+    document.getElementById('form-register').reset();
+  } else {
+    showToast('Registration failed. Try again.', 'error');
+  }
+}
+
+function handleLogin(e) {
+  e.preventDefault();
+  const username = document.getElementById('login-username').value.trim();
+  const password = document.getElementById('login-password').value;
+  
+  const user = getUsers().find(u => u.username === username && u.password === password);
+  if (!user) { showToast('Invalid username or password', 'error'); return; }
+  if (!user.is_active) { showToast('Account is deactivated. Contact admin.', 'error'); return; }
+  
+  currentUser = user;
+  showToast('Welcome, ' + user.display_name + '!', 'success');
+  
+  if (user.role === 'student') {
+    document.getElementById('student-name').textContent = user.display_name;
+    document.getElementById('student-avatar').textContent = user.display_name.charAt(0).toUpperCase();
+    showPage('student');
+    showStudentSection('dashboard');
+    initAssessment();
+    initMemoryGame();
+    initWordGame();
+    updateStudentDashboard();
+    updateDoctorList();
+    updateMyConsultations();
+    updateStudentResources();
+    updateStudentMessages();
+  } else if (user.role === 'doctor') {
+    document.getElementById('doctor-name').textContent = user.display_name;
+    document.getElementById('doctor-avatar').textContent = user.display_name.charAt(0).toUpperCase();
+    showPage('doctor');
+    showDoctorSection('overview');
+    updateDoctorDashboard();
+    updateDoctorMessages();
+  } else if (user.role === 'admin') {
+    showPage('admin');
+    showAdminSection('overview');
+    updateAdminDashboard();
+  }
+}
+
+function handleLogout() {
+  currentUser = null;
+  showPage('landing');
+  showToast('Logged out successfully', 'info');
+}
+
+// ===================== STUDENT SECTIONS =====================
+function showStudentSection(section) {
+  ['dashboard','assessment','chatbot','games','consult','resources','messages'].forEach(s => {
+    const el = document.getElementById('sec-' + s);
+    if (el) el.classList.add('hidden');
+  });
+  document.getElementById('sec-' + section).classList.remove('hidden');
+  
+  document.querySelectorAll('#page-student .nav-item').forEach(n => n.classList.remove('active'));
+  const activeBtn = document.querySelector(`#page-student .nav-item[data-section="${section}"]`);
+  if (activeBtn) activeBtn.classList.add('active');
+}
+
+function updateStudentDashboard() {
+  if (!currentUser) return;
+  const score = currentUser.assessment_score;
+  document.getElementById('dash-score').textContent = score >= 0 ? score + '/30' : 'Not taken';
+  
+  const myConsults = getConsultations().filter(c => c.consultation_student === currentUser.username);
+  document.getElementById('dash-consults').textContent = myConsults.length;
+  
+  const tips = [
+    "Take 5 deep breaths right now. Inhale for 4 seconds, hold for 4, exhale for 6.",
+    "Step outside for a 5-minute walk. Nature exposure reduces cortisol levels significantly.",
+    "Write down one thing you're proud of today, no matter how small.",
+    "Drink a glass of water. Dehydration can worsen anxiety and fatigue.",
+    "Practice the 5-4-3-2-1 grounding technique when you feel overwhelmed."
+  ];
+  document.getElementById('daily-tip').textContent = tips[new Date().getDay() % tips.length];
+}
+
+// ===================== ASSESSMENT =====================
+let assessmentAnswers = {};
+
+function initAssessment() {
+  const container = document.getElementById('assessment-container');
+  container.innerHTML = '';
+  assessmentAnswers = {};
+  document.getElementById('assessment-result').classList.add('hidden');
+  
+  assessmentQuestions.forEach((q, i) => {
+    const div = document.createElement('div');
+    div.className = 'mb-6 p-4 rounded-xl';
+    div.style.background = 'var(--bg)';
+    div.innerHTML = `
+      <p class="font-semibold text-sm mb-3">${i + 1}. ${q.q}</p>
+      <fieldset>
+        <legend class="sr-only">Question ${i+1}</legend>
+        <div class="space-y-2">
+          ${q.opts.map((opt, j) => `
+            <label class="flex items-center gap-3 cursor-pointer p-2 rounded-lg hover:bg-white transition-all">
+              <input type="radio" name="q${i}" value="${j}" onchange="assessmentAnswers[${i}]=${j}" class="accent-[var(--primary)]">
+              <span class="text-sm">${opt}</span>
+            </label>
+          `).join('')}
+        </div>
+      </fieldset>
+    `;
+    container.appendChild(div);
+  });
+  
+  const submitBtn = document.createElement('button');
+  submitBtn.className = 'btn-primary w-full py-3 rounded-xl text-white font-bold text-sm';
+  submitBtn.textContent = 'Submit Assessment';
+  submitBtn.type = 'button';
+  submitBtn.onclick = submitAssessment;
+  container.appendChild(submitBtn);
+}
+
+async function submitAssessment() {
+  if (Object.keys(assessmentAnswers).length < 10) {
+    showToast('Please answer all 10 questions', 'error');
+    return;
+  }
+  
+  const totalScore = Object.values(assessmentAnswers).reduce((a, b) => a + b, 0);
+  
+  if (currentUser && currentUser.__backendId) {
+    const updated = { ...currentUser, assessment_score: totalScore, assessment_date: new Date().toISOString() };
+    const result = await window.dataSdk.update(updated);
+    if (result.isOk) {
+      currentUser.assessment_score = totalScore;
+      currentUser.assessment_date = new Date().toISOString();
+    }
+  }
+  
+  const resultDiv = document.getElementById('assessment-result');
+  resultDiv.classList.remove('hidden');
+  
+  let level, color, emoji, advice;
+  if (totalScore <= 7) {
+    level = 'Low Risk'; color = '#2ECC71'; emoji = '🟢';
+    advice = "Your mental health appears to be in good shape. Continue your current self-care practices!";
+  } else if (totalScore <= 15) {
+    level = 'Mild Concern'; color = '#F1C40F'; emoji = '🟡';
+    advice = "You may be experiencing some mild mental health challenges. Try our relaxation exercises.";
+  } else if (totalScore <= 22) {
+    level = 'Moderate Concern'; color = '#E67E22'; emoji = '🟠';
+    advice = "We recommend booking a consultation with one of our psychologists.";
+  } else {
+    level = 'High Concern'; color = '#E74C3C'; emoji = '🔴';
+    advice = "Please consider reaching out to a psychologist. You are not alone, and help is available.";
+  }
+  
+  resultDiv.innerHTML = `
+    <div class="text-4xl mb-3">${emoji}</div>
+    <h3 class="text-xl font-bold mb-1" style="color:${color};">${level}</h3>
+    <p class="text-3xl font-bold mb-4" style="color:var(--primary);">${totalScore}/30</p>
+    <p class="text-sm" style="color:var(--secondary);">${advice}</p>
+    <button onclick="initAssessment()" class="mt-4 px-6 py-2 rounded-lg text-sm font-semibold" style="background:var(--bg);color:var(--primary);">Retake Assessment</button>
+  `;
+  
+  updateStudentDashboard();
+}
+
+// ===================== AI CHATBOT =====================
+function handleChatSend(e) {
+  e.preventDefault();
+  const input = document.getElementById('chat-input');
+  const message = input.value.trim();
+  if (!message) return;
+  
+  const container = document.getElementById('chat-messages');
+  
+  const userBubble = document.createElement('div');
+  userBubble.className = 'chat-bubble chat-user anim-slide';
+  userBubble.textContent = message;
+  container.appendChild(userBubble);
+  
+  input.value = '';
+  container.scrollTop = container.scrollHeight;
+  
+  setTimeout(() => {
+    const response = generateChatResponse(message);
+    const botBubble = document.createElement('div');
+    botBubble.className = 'chat-bubble chat-bot anim-slide';
+    botBubble.textContent = response;
+    container.appendChild(botBubble);
+    container.scrollTop = container.scrollHeight;
+  }, 800 + Math.random() * 700);
+}
+
+function generateChatResponse(msg) {
+  const lower = msg.toLowerCase();
+  let category = 'default';
+  
+  if (/\b(hi|hello|hey|greetings)\b/.test(lower)) category = 'greeting';
+  else if (/\b(anxious|anxiety|worried|panic|nervous|fear)\b/.test(lower)) category = 'anxious';
+  else if (/\b(sad|depressed|depression|unhappy|hopeless|cry|crying)\b/.test(lower)) category = 'sad';
+  else if (/\b(stress|stressed|overwhelm|pressure|burned out|burnout)\b/.test(lower)) category = 'stressed';
+  else if (/\b(sleep|insomnia|tired|exhausted|rest|fatigue)\b/.test(lower)) category = 'sleep';
+  else if (/\b(lonely|alone|isolated|no friends|disconnect)\b/.test(lower)) category = 'lonely';
+  
+  const responses = chatResponses[category];
+  return responses[Math.floor(Math.random() * responses.length)];
+}
+
+// ===================== MEMORY GAME =====================
+function initMemoryGame() {
+  const emojis = ['🧠','💚','🌿','🦋','🌈','☀️','🌸','⭐'];
+  const deck = [...emojis, ...emojis];
+  memoryCards = deck.sort(() => Math.random() - 0.5);
+  memoryFlipped = [];
+  memoryMatched = new Set();
+  memoryMoves = 0;
+  memoryLocked = false;
+  
+  const grid = document.getElementById('memory-game');
+  grid.innerHTML = '';
+  
+  memoryCards.forEach((emoji, i) => {
+    const cell = document.createElement('div');
+    cell.className = 'game-cell';
+    cell.dataset.index = i;
+    cell.textContent = '?';
+    cell.style.fontSize = '20px';
+    cell.onclick = () => flipCard(i, cell);
+    grid.appendChild(cell);
+  });
+  
+  document.getElementById('memory-moves').textContent = 'Moves: 0';
+}
+
+function flipCard(index, cell) {
+  if (memoryLocked || memoryFlipped.includes(index) || memoryMatched.has(index)) return;
+  
+  cell.textContent = memoryCards[index];
+  cell.style.background = 'rgba(43,168,158,0.1)';
+  cell.classList.add('revealed');
+  memoryFlipped.push(index);
+  
+  if (memoryFlipped.length === 2) {
+    memoryMoves++;
+    document.getElementById('memory-moves').textContent = 'Moves: ' + memoryMoves;
+    
+    const [a, b] = memoryFlipped;
+    if (memoryCards[a] === memoryCards[b]) {
+      memoryMatched.add(a);
+      memoryMatched.add(b);
+      memoryFlipped = [];
+      
+      if (memoryMatched.size === memoryCards.length) {
+        setTimeout(() => showToast('   Congratulations! Completed in ' + memoryMoves + ' moves!', 'success'), 300);
+      }
+    } else {
+      memoryLocked = true;
+      setTimeout(() => {
+        const cells = document.querySelectorAll('#memory-game .game-cell');
+        cells[a].textContent = '?'; cells[a].style.background = 'var(--surface)'; cells[a].classList.remove('revealed');
+        cells[b].textContent = '?'; cells[b].style.background = 'var(--surface)'; cells[b].classList.remove('revealed');
+        memoryFlipped = [];
+        memoryLocked = false;
+      }, 800);
+    }
+  }
+}
+
+// ===================== BREATHING EXERCISE =====================
+function startBreathing() {
+  const circle = document.getElementById('breath-circle');
+  const text = document.getElementById('breath-text');
+  const btn = document.getElementById('breath-btn');
+  
+  if (breathInterval) {
+    clearInterval(breathInterval);
+    breathInterval = null;
+    circle.style.width = '120px'; circle.style.height = '120px';
+    text.textContent = 'Start';
+    btn.textContent = 'Begin';
+    return;
+  }
+  
+  btn.textContent = 'Stop';
+  let phase = 0;
+  const phases = [
+    { text: 'Breathe In...', w: '180px', dur: 4000 },
+    { text: 'Hold...', w: '180px', dur: 4000 },
+    { text: 'Breathe Out...', w: '100px', dur: 6000 },
+    { text: 'Rest...', w: '100px', dur: 2000 }
+  ];
+  
+  function nextPhase() {
+    const p = phases[phase % phases.length];
+    text.textContent = p.text;
+    circle.style.width = p.w;
+    circle.style.height = p.w;
+    phase++;
+  }
+  
+  nextPhase();
+  breathInterval = setInterval(nextPhase, 4000);
+}
+
+// ===================== WORD GAME =====================
+function initWordGame() {
+  wordGameData = [...wordGames].sort(() => Math.random() - 0.5).slice(0, 3);
+  renderWordGame();
+}
+
+function renderWordGame() {
+  const container = document.getElementById('word-game');
+  container.innerHTML = '';
+  
+  wordGameData.forEach((item, idx) => {
+    const shuffled = item.word.split('').sort(() => Math.random() - 0.5).join('');
+    const inputId = 'word-input-' + idx;
+    const div = document.createElement('div');
+    div.className = 'p-4 rounded-xl' ;
+    div.style.background = 'var(--bg)';
+    div.innerHTML = `
+      <div class="flex items-center gap-3 mb-3">
+        <span class="text-2xl font-bold" style="color:var(--primary);">${idx + 1}</span>
+        <div>
+          <p class="text-sm font-bold tracking-widest">${shuffled}</p>
+          <p class="text-xs" style="color:var(--secondary);">Hint: ${item.hint}</p>
+        </div>
+      </div>
+      <label for="${inputId}" class="sr-only">Answer for ${item.hint}</label>
+      <input id="${inputId}" type="text" class="w-full px-3 py-2 rounded-lg border text-sm" style="border-color:#e0ede9;background:var(--surface);" placeholder="Your answer" autocomplete="off">
+    `;
+    container.appendChild(div);
+  });
+}
+
+// ===================== GRATITUDE & MOOD =====================
+function saveGratitude() {
+  const g1 = document.getElementById('grat1').value.trim();
+  const g2 = document.getElementById('grat2').value.trim();
+  const g3 = document.getElementById('grat3').value.trim();
+  if (!g1 && !g2 && !g3) { showToast('Write at least one thing you\'re grateful for', 'error'); return; }
+  showToast('✨ Gratitude saved! Reflecting on the positive builds resilience.', 'success');
+  document.getElementById('grat1').value = '';
+  document.getElementById('grat2').value = '';
+  document.getElementById('grat3').value = '';
+}
+
+function selectMood(emoji, label) {
+  document.getElementById('mood-result').textContent = `${emoji} You're feeling: ${label}`;
+  showToast(`Mood recorded: ${label}. Thank you for checking in!`, 'info');
+}
+
+// ===================== CONSULTATIONS =====================
+function updateDoctorList() {
+  const doctors = getUsers().filter(u => u.role === 'doctor' && u.is_active);
+  const list = document.getElementById('doctor-list');
+  const select = document.getElementById('consult-doctor');
+  const noDoc = document.getElementById('no-doctors');
+  
+  list.innerHTML = '';
+  select.innerHTML = '<option value="">Choose a psychologist...</option>';
+  
+  if (doctors.length === 0) {
+    noDoc.style.display = ''; list.style.display = 'none';
+    return;
+  }
+  
+  noDoc.style.display = 'none'; list.style.display = '';
+  
+  doctors.forEach(doc => {
+    const card = document.createElement('div');
+    card.className = 'card-hover rounded-xl p-4 flex items-center gap-4';
+    card.style.background = 'var(--bg)';
+    card.innerHTML = `
+      <div class="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold" style="background:var(--primary);">${doc.display_name.charAt(0)}</div>
+      <div>
+        <p class="font-bold text-sm">Dr. ${doc.display_name}</p>
+        <p class="text-xs" style="color:var(--secondary);">Psychologist · Available</p>
+      </div>
+      <span class="ml-auto w-2 h-2 rounded-full" style="background:#2ECC71;"></span>
+    `;
+    list.appendChild(card);
+    
+    const opt = document.createElement('option');
+    opt.value = doc.username;
+    opt.textContent = 'Dr. ' + doc.display_name;
+    select.appendChild(opt);
+  });
+}
+
+function updateMyConsultations() {
+  if (!currentUser) return;
+  const myConsults = getConsultations().filter(c => c.consultation_student === currentUser.username);
+  const list = document.getElementById('my-consults');
+  const noEl = document.getElementById('no-consults');
+  
+  list.innerHTML = '';
+  
+  if (myConsults.length === 0) { noEl.style.display = ''; return; }
+  noEl.style.display = 'none';
+  
+  myConsults.forEach(c => {
+    const statusColors = { pending: '#F1C40F', accepted: '#2ECC71', completed: '#3498DB' };
+    const card = document.createElement('div');
+    card.className = 'rounded-xl p-4';
+    card.style.background = 'var(--bg)';
+    card.innerHTML = `
+      <div class="flex items-center justify-between mb-2">
+        <span class="font-bold text-sm">Dr. ${c.consultation_doctor}</span>
+        <span class="text-xs px-2 py-1 rounded-full font-semibold" style="background:${statusColors[c.consultation_status] || '#ccc'}22;color:${statusColors[c.consultation_status] || '#999'};">${c.consultation_status || 'pending'}</span>
+      </div>
+      <p class="text-xs mb-1" style="color:var(--secondary);">Your message:</p>
+      <p class="text-sm mb-2">${c.consultation_message}</p>
+      ${c.consultation_reply ? `<p class="text-xs mb-1" style="color:var(--primary);">Doctor's reply:</p><p class="text-sm p-3 rounded-lg" style="background:var(--surface);">${c.consultation_reply}</p>` : ''}
+    `;
+    list.appendChild(card);
+  });
+}
+
+async function requestConsultation(e) {
+  e.preventDefault();
+  const doctor = document.getElementById('consult-doctor').value;
+  const message = document.getElementById('consult-msg').value.trim();
+  if (!doctor || !message) { showToast('Please select a doctor and describe your concern', 'error'); return; }
+  
+  if (allData.length >= 999) { showToast('Data limit reached', 'error'); return; }
+  
+  const btn = document.getElementById('consult-submit-btn');
+  btn.disabled = true; btn.textContent = 'Submitting...';
+  
+  const result = await window.dataSdk.create({
+    type: 'consultation', email: currentUser.email, username: currentUser.username,
+    password: '', role: '', display_name: currentUser.display_name,
+    created_at: new Date().toISOString(), assessment_score: -1, assessment_date: '',
+    consultation_status: 'pending', consultation_doctor: doctor,
+    consultation_student: currentUser.username, consultation_message: message,
+    consultation_reply: '', content_title: '', content_body: '', content_type: '',
+    content_link: '', chat_message: '', chat_sender: '', chat_recipient: '',
+    chat_timestamp: '', is_active: true
+  });
+  
+  btn.disabled = false; btn.textContent = 'Submit Request';
+  
+  if (result.isOk) {
+    showToast('Consultation request sent!', 'success');
+    document.getElementById('consult-msg').value = '';
+  } else {
+    showToast('Failed to send request', 'error');
+  }
+}
+
+// ===================== RESOURCES =====================
+function openResourceModal() {
+  document.getElementById('resource-modal').style.display = '';
+}
+
+function closeResourceModal() {
+  document.getElementById('resource-modal').style.display = 'none';
+  document.getElementById('res-type').value = '';
+  document.getElementById('res-title').value = '';
+  document.getElementById('res-desc').value = '';
+  document.getElementById('res-link').value = '';
+}
+
+async function addResource(e) {
+  e.preventDefault();
+  
+  if (allData.length >= 999) { showToast('Data limit reached', 'error'); return; }
+  
+  const type = document.getElementById('res-type').value;
+  const title = document.getElementById('res-title').value.trim();
+  const desc = document.getElementById('res-desc').value.trim();
+  const link = document.getElementById('res-link').value.trim();
+  
+  if (!type || !title || !desc) { showToast('Please fill all required fields', 'error'); return; }
+  
+  const result = await window.dataSdk.create({
+    type: 'resource',
+    email: '',
+    username: '',
+    password: '',
+    role: '',
+    display_name: '',
+    created_at: new Date().toISOString(),
+    assessment_score: -1,
+    assessment_date: '',
+    consultation_status: '',
+    consultation_doctor: '',
+    consultation_student: '',
+    consultation_message: '',
+    consultation_reply: '',
+    content_title: title,
+    content_body: desc,
+    content_type: type,
+    content_link: link,
+    chat_message: '',
+    chat_sender: '',
+    chat_recipient: '',
+    chat_timestamp: '',
+    is_active: true
+  });
+  
+  if (result.isOk) {
+    showToast('✨ Resource added successfully!', 'success');
+    closeResourceModal();
+    updateStudentResources();
+    updateAdminResources();
+  } else {
+    showToast('Failed to add resource', 'error');
+  }
+}
+
+function updateStudentResources() {
+  const resources = getResources();
+  
+  const books = resources.filter(r => r.content_type === 'book');
+  const videos = resources.filter(r => r.content_type === 'video');
+  const audio = resources.filter(r => r.content_type === 'audio');
+  
+  renderResourcesList('resources-books', books);
+  renderResourcesList('resources-videos', videos);
+  renderResourcesList('resources-audio', audio);
+  
+  document.getElementById('no-books').style.display = books.length === 0 ? '' : 'none';
+  document.getElementById('no-videos').style.display = videos.length === 0 ? '' : 'none';
+  document.getElementById('no-audio').style.display = audio.length === 0 ? '' : 'none';
+}
+
+function updateAdminResources() {
+  const resources = getResources();
+  
+  const books = resources.filter(r => r.content_type === 'book');
+  const videos = resources.filter(r => r.content_type === 'video');
+  const audio = resources.filter(r => r.content_type === 'audio');
+  
+  renderAdminResourcesList('admin-books', books);
+  renderAdminResourcesList('admin-videos', videos);
+  renderAdminResourcesList('admin-audio', audio);
+  
+  document.getElementById('admin-no-books').style.display = books.length === 0 ? '' : 'none';
+  document.getElementById('admin-no-videos').style.display = videos.length === 0 ? '' : 'none';
+  document.getElementById('admin-no-audio').style.display = audio.length === 0 ? '' : 'none';
+}
+
+function renderResourcesList(containerId, resources) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = '';
+  resources.forEach(r => {
+    const card = document.createElement('div');
+    card.className = 'card-hover rounded-xl p-4';
+    card.style.background = 'var(--bg)';
+    card.innerHTML = `
+      <h4 class="font-bold text-sm mb-1">${r.content_title}</h4>
+      <p class="text-xs mb-3" style="color:var(--secondary);">${r.content_body}</p>
+      ${r.content_link ? `<a href="${r.content_link}" target="_blank" rel="noopener noreferrer" class="text-xs" style="color:var(--primary);">Open resource →</a>` : ''}
+    `;
+    container.appendChild(card);
+  });
+}
+
+function renderAdminResourcesList(containerId, resources) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = '';
+  resources.forEach(r => {
+    const card = document.createElement('div');
+    card.className = 'rounded-xl p-4 flex items-center justify-between';
+    card.style.background = 'var(--bg)';
+    card.innerHTML = `
+      <div>
+        <h4 class="font-bold text-sm mb-1">${r.content_title}</h4>
+        <p class="text-xs" style="color:var(--secondary);">${r.content_body}</p>
+      </div>
+      <button onclick="deleteResource('${r.__backendId}')" class="text-red-500 hover:text-red-700 font-bold">✕</button>
+    `;
+    container.appendChild(card);
+  });
+}
+
+async function deleteResource(backendId) {
+  const resource = allData.find(d => d.__backendId === backendId);
+  if (!resource) return;
+  
+  const result = await window.dataSdk.delete(resource);
+  if (result.isOk) {
+    showToast('Resource deleted', 'success');
+  }
+}
+
+// ===================== MESSAGING =====================
+function updateStudentMessages() {
+  if (!currentUser) return;
+  const messages = getMessages().filter(m => m.chat_recipient === currentUser.username);
+  const container = document.getElementById('student-messages');
+  const badge = document.getElementById('msg-badge');
+  
+  if (messages.length > 0) {
+    badge.classList.remove('hidden');
+    badge.textContent = messages.length;
+  } else {
+    badge.classList.add('hidden');
+  }
+  
+  if (messages.length === 0) {
+    container.innerHTML = '<div class="text-center py-12 text-sm" style="color:var(--secondary);"><div class="text-4xl mb-2">📬</div>No messages from admin yet</div>';
+    return;
+  }
+  
+  container.innerHTML = '';
+  messages.forEach(m => {
+    const msg = document.createElement('div');
+    msg.className = 'rounded-xl p-4 anim-bounce';
+    msg.style.background = 'var(--bg)';
+    msg.innerHTML = `
+      <div class="flex items-center justify-between mb-2">
+        <span class="font-bold text-sm">👤 Admin</span>
+        <span class="text-xs" style="color:var(--secondary);">${new Date(m.created_at).toLocaleDateString()}</span>
+      </div>
+      <p class="text-sm">${m.chat_message}</p>
+    `;
+    container.appendChild(msg);
+  });
+}
+
+function updateDoctorMessages() {
+  if (!currentUser) return;
+  const messages = getMessages().filter(m => m.chat_recipient === currentUser.username);
+  const container = document.getElementById('doctor-messages');
+  const badge = document.getElementById('doc-msg-badge');
+  
+  if (messages.length > 0) {
+    badge.classList.remove('hidden');
+    badge.textContent = messages.length;
+  } else {
+    badge.classList.add('hidden');
+  }
+  
+  if (messages.length === 0) {
+    container.innerHTML = '<div class="text-center py-12 text-sm" style="color:var(--secondary);"><div class="text-4xl mb-2">📬</div>No messages from admin yet</div>';
+    return;
+  }
+  
+  container.innerHTML = '';
+  messages.forEach(m => {
+    const msg = document.createElement('div');
+    msg.className = 'rounded-xl p-4 anim-bounce';
+    msg.style.background = 'var(--bg)';
+    msg.innerHTML = `
+      <div class="flex items-center justify-between mb-2">
+        <span class="font-bold text-sm">👤 Admin</span>
+        <span class="text-xs" style="color:var(--secondary);">${new Date(m.created_at).toLocaleDateString()}</span>
+      </div>
+      <p class="text-sm">${m.chat_message}</p>
+    `;
+    container.appendChild(msg);
+  });
+}
+
+function openAdminMessageModal(recipient) {
+  document.getElementById('msg-recipient').value = recipient;
+  document.getElementById('admin-message-modal').style.display = '';
+}
+
+function closeAdminMessageModal() {
+  document.getElementById('admin-message-modal').style.display = 'none';
+  document.getElementById('msg-recipient').value = '';
+  document.getElementById('msg-content').value = '';
+}
+
+async function sendAdminMessage(e) {
+  e.preventDefault();
+  
+  if (allData.length >= 999) { showToast('Data limit reached', 'error'); return; }
+  
+  const recipient = document.getElementById('msg-recipient').value.trim();
+  const message = document.getElementById('msg-content').value.trim();
+  
+  if (!recipient || !message) { showToast('Please fill all fields', 'error'); return; }
+  
+  const result = await window.dataSdk.create({
+    type: 'message',
+    email: '',
+    username: '',
+    password: '',
+    role: '',
+    display_name: '',
+    created_at: new Date().toISOString(),
+    assessment_score: -1,
+    assessment_date: '',
+    consultation_status: '',
+    consultation_doctor: '',
+    consultation_student: '',
+    consultation_message: '',
+    consultation_reply: '',
+    content_title: '',
+    content_body: '',
+    content_type: '',
+    content_link: '',
+    chat_message: message,
+    chat_sender: currentUser.username,
+    chat_recipient: recipient,
+    chat_timestamp: new Date().toISOString(),
+    is_active: true
+  });
+  
+  if (result.isOk) {
+    showToast('Message sent successfully! 📬', 'success');
+    closeAdminMessageModal();
+    updateAdminMessaging();
+  } else {
+    showToast('Failed to send message', 'error');
+  }
+}
+
+function updateAdminMessaging() {
+  const users = getUsers().filter(u => (u.role === 'student' || u.role === 'doctor') && u.is_active);
+  const userList = document.getElementById('admin-message-users');
+  const noUsers = document.getElementById('admin-no-message-users');
+  
+  userList.innerHTML = '';
+  
+  if (users.length === 0) {
+    noUsers.style.display = '';
+    return;
+  }
+  
+  noUsers.style.display = 'none';
+  
+  users.forEach(u => {
+    const roleIcon = u.role === 'doctor' ? '👨‍⚕️' : '🎓';
+    const card = document.createElement('div');
+    card.className = 'flex items-center justify-between p-4 rounded-xl';
+    card.style.background = 'var(--bg)';
+    card.innerHTML = `
+      <div class="flex items-center gap-3">
+        <span>${roleIcon}</span>
+        <div>
+          <p class="font-bold text-sm">${u.display_name}</p>
+          <p class="text-xs" style="color:var(--secondary);">${u.username}</p>
+        </div>
+      </div>
+      <button onclick="openAdminMessageModal('${u.username}')" class="btn-primary px-4 py-2 rounded-lg text-white text-xs font-semibold">Message</button>
+    `;
+    userList.appendChild(card);
+  });
+  
+  // Sent messages
+  const messages = getMessages().filter(m => m.chat_sender === currentUser.username);
+  const sentList = document.getElementById('admin-sent-messages');
+  const noSent = document.getElementById('admin-no-sent-messages');
+  
+  sentList.innerHTML = '';
+  
+  if (messages.length === 0) {
+    noSent.style.display = '';
+    return;
+  }
+  
+  noSent.style.display = 'none';
+  
+  messages.forEach(m => {
+    const recipient = getUsers().find(u => u.username === m.chat_recipient);
+    const card = document.createElement('div');
+    card.className = 'rounded-xl p-4';
+    card.style.background = 'var(--bg)';
+    card.innerHTML = `
+      <div class="flex items-center justify-between mb-2">
+        <span class="font-bold text-sm">To: ${recipient ? recipient.display_name : m.chat_recipient}</span>
+        <span class="text-xs" style="color:var(--secondary);">${new Date(m.created_at).toLocaleDateString()}</span>
+      </div>
+      <p class="text-sm mb-3">${m.chat_message}</p>
+      <button onclick="deleteMessage('${m.__backendId}')" class="text-xs px-3 py-1 rounded-lg font-semibold" style="background:var(--surface);color:#E74C3C;">Delete</button>
+    `;
+    sentList.appendChild(card);
+  });
+}
+
+async function deleteMessage(backendId) {
+  const msg = allData.find(d => d.__backendId === backendId);
+  if (!msg) return;
+  
+  const result = await window.dataSdk.delete(msg);
+  if (result.isOk) {
+    showToast('Message deleted', 'success');
+  }
+}
+
+// ===================== DOCTOR SECTIONS =====================
+function showDoctorSection(section) {
+  ['overview','requests','patients','messages'].forEach(s => {
+    const el = document.getElementById('doc-' + s);
+    if (el) el.classList.add('hidden');
+  });
+  document.getElementById('doc-' + section).classList.remove('hidden');
+  
+  document.querySelectorAll('#page-doctor .nav-item').forEach(n => n.classList.remove('active'));
+  const activeBtn = document.querySelector(`#page-doctor .nav-item[data-section="${section}"]`);
+  if (activeBtn) activeBtn.classList.add('active');
+}
+
+function updateDoctorDashboard() {
+  if (!currentUser) return;
+  const consults = getConsultations().filter(c => c.consultation_doctor === currentUser.username);
+  const pending = consults.filter(c => c.consultation_status === 'pending');
+  const accepted = consults.filter(c => c.consultation_status === 'accepted');
+  
+  document.getElementById('doc-pending').textContent = pending.length;
+  document.getElementById('doc-active').textContent = accepted.length;
+  document.getElementById('doc-total').textContent = consults.length;
+  
+  const reqList = document.getElementById('doc-request-list');
+  const noReq = document.getElementById('no-doc-requests');
+  reqList.innerHTML = '';
+  
+  if (pending.length === 0) { noReq.style.display = ''; } else {
+    noReq.style.display = 'none';
+    pending.forEach(c => {
+      const card = document.createElement('div');
+      card.className = 'rounded-2xl p-5';
+      card.style.background = 'var(--surface)';
+      card.innerHTML = `
+        <div class="flex items-center justify-between mb-3">
+          <span class="font-bold">${c.display_name || c.consultation_student}</span>
+          <span class="text-xs" style="color:var(--secondary);">${new Date(c.created_at).toLocaleDateString()}</span>
+        </div>
+        <p class="text-sm mb-4">${c.consultation_message}</p>
+        <div class="flex gap-2">
+          <button onclick="handleConsultAction('${c.__backendId}','accepted')" class="btn-primary px-4 py-2 rounded-lg text-white text-xs font-semibold">Accept</button>
+          <button onclick="handleConsultAction('${c.__backendId}','completed')" class="px-4 py-2 rounded-lg text-xs font-semibold" style="background:var(--bg);color:var(--primary);">Decline</button>
+        </div>
+      `;
+      reqList.appendChild(card);
+    });
+  }
+  
+  const patList = document.getElementById('doc-patient-list');
+  const noPat = document.getElementById('no-doc-patients');
+  patList.innerHTML = '';
+  
+  if (accepted.length === 0) { noPat.style.display = ''; } else {
+    noPat.style.display = 'none';
+    accepted.forEach(c => {
+      const card = document.createElement('div');
+      card.className = 'rounded-2xl p-5';
+      card.style.background = 'var(--surface)';
+      const replyId = 'reply-' + c.__backendId;
+      card.innerHTML = `
+        <div class="flex items-center justify-between mb-3">
+          <span class="font-bold">${c.display_name || c.consultation_student}</span>
+          <span class="text-xs px-2 py-1 rounded-full font-semibold" style="background:rgba(46,204,113,0.15);color:#2ECC71;">Active</span>
+        </div>
+        <p class="text-sm mb-3">${c.consultation_message}</p>
+        ${c.consultation_reply ? `<p class="text-xs mb-1" style="color:var(--primary);">Your reply:</p><p class="text-sm p-3 rounded-lg mb-3" style="background:var(--bg);">${c.consultation_reply}</p>` : ''}
+        <div class="flex gap-2">
+          <label for="${replyId}" class="sr-only">Reply message</label>
+          <input id="${replyId}" type="text" class="flex-1 px-3 py-2 rounded-lg border text-sm" style="border-color:#e0ede9;background:var(--bg);" placeholder="Send a reply...">
+          <button onclick="sendDoctorReply('${c.__backendId}','${replyId}')" class="btn-primary px-4 py-2 rounded-lg text-white text-xs font-semibold">Reply</button>
+        </div>
+      `;
+      patList.appendChild(card);
+    });
+  }
+}
+
+async function handleConsultAction(backendId, newStatus) {
+  const consult = allData.find(d => d.__backendId === backendId);
+  if (!consult) return;
+  
+  const updated = { ...consult, consultation_status: newStatus };
+  const result = await window.dataSdk.update(updated);
+  if (result.isOk) {
+    showToast('Consultation ' + newStatus, 'success');
+  } else {
+    showToast('Action failed', 'error');
+  }
+}
+
+async function sendDoctorReply(backendId, inputId) {
+  const input = document.getElementById(inputId);
+  const reply = input.value.trim();
+  if (!reply) return;
+  
+  const consult = allData.find(d => d.__backendId === backendId);
+  if (!consult) return;
+  
+  const updated = { ...consult, consultation_reply: reply };
+  const result = await window.dataSdk.update(updated);
+  if (result.isOk) {
+    input.value = '';
+    showToast('Reply sent!', 'success');
+  } else {
+    showToast('Failed to send reply', 'error');
+  }
+}
+
+// ===================== ADMIN SECTIONS =====================
+function showAdminSection(section) {
+  ['overview','users','consultations','resources','messaging'].forEach(s => {
+    const el = document.getElementById('admin-' + s);
+    if (el) el.classList.add('hidden');
+  });
+  document.getElementById('admin-' + section).classList.remove('hidden');
+  
+  document.querySelectorAll('#page-admin .nav-item').forEach(n => n.classList.remove('active'));
+  const activeBtn = document.querySelector(`#page-admin .nav-item[data-section="${section}"]`);
+  if (activeBtn) activeBtn.classList.add('active');
+  
+  if (section === 'users') renderAdminUsers();
+  if (section === 'consultations') renderAdminConsultations();
+  if (section === 'resources') updateAdminResources();
+  if (section === 'messaging') updateAdminMessaging();
+}
+
+function updateAdminDashboard() {
+  const users = getUsers();
+  document.getElementById('admin-users-count').textContent = users.length;
+  document.getElementById('admin-students-count').textContent = users.filter(u => u.role === 'student').length;
+  document.getElementById('admin-doctors-count').textContent = users.filter(u => u.role === 'doctor').length;
+  document.getElementById('admin-resources-count').textContent = getResources().length;
+}
+
+function renderAdminUsers() {
+  const filter = document.getElementById('admin-user-filter').value;
+  let users = getUsers();
+  if (filter !== 'all') users = users.filter(u => u.role === filter);
+  
+  const list = document.getElementById('admin-user-list');
+  const noEl = document.getElementById('no-admin-users');
+  list.innerHTML = '';
+  
+  if (users.length === 0) { noEl.style.display = ''; return; }
+  noEl.style.display = 'none';
+  
+  users.forEach(u => {
+    const roleIcons = { student: '🎓', doctor: '👨‍⚕️', admin: '🔐' };
+    const row = document.createElement('div');
+    row.className = 'flex items-center justify-between p-3 rounded-xl';
+    row.style.background = 'var(--bg)';
+    row.innerHTML = `
+      <div class="flex items-center gap-3">
+        <span>${roleIcons[u.role] || '👤'}</span>
+        <div>
+          <p class="text-sm font-semibold">${u.display_name}</p>
+          <p class="text-xs" style="color:var(--secondary);">${u.username} · ${u.email}</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="text-xs px-2 py-1 rounded-full font-semibold" style="background:${u.is_active ? 'rgba(46,204,113,0.15)' : 'rgba(231,76,60,0.15)'};color:${u.is_active ? '#2ECC71' : '#E74C3C'};">${u.is_active ? 'Active' : 'Inactive'}</span>
+        <button onclick="toggleUserActive('${u.__backendId}')" class="text-xs px-3 py-1 rounded-lg font-semibold" style="background:var(--surface);color:var(--primary);">${u.is_active ? 'Deactivate' : 'Activate'}</button>
+      </div>
+    `;
+    list.appendChild(row);
+  });
+}
+
+async function toggleUserActive(backendId) {
+  const user = allData.find(d => d.__backendId === backendId);
+  if (!user) return;
+  const updated = { ...user, is_active: !user.is_active };
+  const result = await window.dataSdk.update(updated);
+  if (result.isOk) showToast('User status updated', 'success');
+  else showToast('Update failed', 'error');
+}
+
+function renderAdminConsultations() {
+  const consults = getConsultations();
+  const list = document.getElementById('admin-consult-list');
+  const noEl = document.getElementById('no-admin-consults');
+  list.innerHTML = '';
+  
+  if (consults.length === 0) { noEl.style.display = ''; return; }
+  noEl.style.display = 'none';
+  
+  consults.forEach(c => {
+    const statusColors = { pending: '#F1C40F', accepted: '#2ECC71', completed: '#3498DB' };
+    const card = document.createElement('div');
+    card.className = 'rounded-2xl p-5';
+    card.style.background = 'var(--surface)';
+    card.innerHTML = `
+      <div class="flex items-center justify-between mb-2">
+        <span class="font-bold text-sm">${c.display_name || c.consultation_student} → ${c.consultation_doctor}</span>
+        <span class="text-xs px-2 py-1 rounded-full font-semibold" style="background:${statusColors[c.consultation_status] || '#ccc'}22;color:${statusColors[c.consultation_status] || '#999'};">${c.consultation_status}</span>
+      </div>
+      <p class="text-sm">${c.consultation_message}</p>
+      ${c.consultation_reply ? `<p class="text-xs mt-2 p-2 rounded-lg" style="background:var(--bg);color:var(--primary);">Reply: ${c.consultation_reply}</p>` : ''}
+      <p class="text-xs mt-2" style="color:var(--secondary);">${new Date(c.created_at).toLocaleString()}</p>
+    `;
+    list.appendChild(card);
+  });
+}
+
+// ===================== DATA SDK HANDLER =====================
+const dataHandler = {
+  onDataChanged(data) {
+    allData = data;
+    
+    if (currentUser) {
+      const refreshed = data.find(d => d.__backendId === currentUser.__backendId);
+      if (refreshed) currentUser = refreshed;
+    }
+    
+    if (currentUser) {
+      if (currentUser.role === 'student') {
+        updateStudentDashboard();
+        updateDoctorList();
+        updateMyConsultations();
+        updateStudentResources();
+        updateStudentMessages();
+      } else if (currentUser.role === 'doctor') {
+        updateDoctorDashboard();
+        updateDoctorMessages();
+      } else if (currentUser.role === 'admin') {
+        updateAdminDashboard();
+        const usersSection = document.getElementById('admin-users');
+        if (usersSection && !usersSection.classList.contains('hidden')) renderAdminUsers();
+        const consultsSection = document.getElementById('admin-consultations');
+        if (consultsSection && !consultsSection.classList.contains('hidden')) renderAdminConsultations();
+        const resourcesSection = document.getElementById('admin-resources');
+        if (resourcesSection && !resourcesSection.classList.contains('hidden')) updateAdminResources();
+        const messagingSection = document.getElementById('admin-messaging');
+        if (messagingSection && !messagingSection.classList.contains('hidden')) updateAdminMessaging();
+      }
+    }
+  }
+};
+
+// ===================== ELEMENT SDK =====================
+function applyConfig(config) {
+  const c = { ...defaultConfig, ...config };
+  
+  document.documentElement.style.setProperty('--bg', c.background_color);
+  document.documentElement.style.setProperty('--surface', c.surface_color);
+  document.documentElement.style.setProperty('--text', c.text_color);
+  document.documentElement.style.setProperty('--primary', c.primary_color);
+  document.documentElement.style.setProperty('--secondary', c.secondary_color);
+  
+  document.body.style.color = c.text_color;
+  document.body.style.background = c.background_color;
+  
+  const fontStack = `${c.font_family}, 'DM Sans', sans-serif`;
+  document.body.style.fontFamily = fontStack;
+  
+  const base = c.font_size || 16;
+  document.body.style.fontSize = base + 'px';
+  
+  const navTitle = document.getElementById('nav-title');
+  if (navTitle) navTitle.textContent = c.site_title;
+  
+  const heroTitle = document.getElementById('el-hero-title');
+  if (heroTitle) {
+    const parts = c.hero_title.split(' ');
+    heroTitle.innerHTML = parts.length > 1 ? parts[0] + '<br>' + parts.slice(1).join(' ') : c.hero_title;
+  }
+  
+  const heroSub = document.getElementById('el-hero-subtitle');
+  if (heroSub) heroSub.textContent = c.hero_subtitle;
+  
+  const ctaBtn = document.getElementById('el-cta-btn');
+  if (ctaBtn) ctaBtn.textContent = c.cta_button_text;
+  
+  const tagline = document.getElementById('el-tagline');
+  if (tagline) tagline.textContent = c.tagline;
+}
+
+// ===================== INIT =====================
+(async function init() {
+  if (window.elementSdk) {
+    window.elementSdk.init({
+      defaultConfig,
+      onConfigChange: async (config) => { applyConfig(config); },
+      mapToCapabilities: (config) => ({
+        recolorables: [
+          { get: () => config.background_color || defaultConfig.background_color, set: (v) => { config.background_color = v; window.elementSdk.setConfig({ background_color: v }); } },
+          { get: () => config.surface_color || defaultConfig.surface_color, set: (v) => { config.surface_color = v; window.elementSdk.setConfig({ surface_color: v }); } },
+          { get: () => config.text_color || defaultConfig.text_color, set: (v) => { config.text_color = v; window.elementSdk.setConfig({ text_color: v }); } },
+          { get: () => config.primary_color || defaultConfig.primary_color, set: (v) => { config.primary_color = v; window.elementSdk.setConfig({ primary_color: v }); } },
+          { get: () => config.secondary_color || defaultConfig.secondary_color, set: (v) => { config.secondary_color = v; window.elementSdk.setConfig({ secondary_color: v }); } }
+        ],
+        borderables: [],
+        fontEditable: {
+          get: () => config.font_family || defaultConfig.font_family,
+          set: (v) => { config.font_family = v; window.elementSdk.setConfig({ font_family: v }); }
+        },
+        fontSizeable: {
+          get: () => config.font_size || defaultConfig.font_size,
+          set: (v) => { config.font_size = v; window.elementSdk.setConfig({ font_size: v }); }
+        }
+      }),
+      mapToEditPanelValues: (config) => new Map([
+        ['site_title', config.site_title || defaultConfig.site_title],
+        ['hero_title', config.hero_title || defaultConfig.hero_title],
+        ['hero_subtitle', config.hero_subtitle || defaultConfig.hero_subtitle],
+        ['cta_button_text', config.cta_button_text || defaultConfig.cta_button_text],
+        ['tagline', config.tagline || defaultConfig.tagline]
+      ])
+    });
+  }
+  
+  if (window.dataSdk) {
+    const result = await window.dataSdk.init(dataHandler);
+    if (!result.isOk) {
+      console.error('Data SDK init failed');
+    }
+  }
+  
+  applyConfig(defaultConfig);
+  showPage('landing');
+})();
+</script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9cba3e49771d854f',t:'MTc3MDcxMjIxNC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
